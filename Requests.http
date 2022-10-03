@@ -1,0 +1,20 @@
+### Request a new Transfer
+POST localhost:8080/transfer/request HTTP/1.1
+Content-Type: application/json
+
+{
+ "amount": 100
+}
+
+### Listen
+GET localhost:8080/transfer/listen/ab88a7f7134e9d5435c97fa2734a17c9 HTTP/1.1
+
+
+### Transfer
+POST localhost:8080/transfer HTTP/1.1
+Content-Type: application/json
+
+{
+ "amount": 100,
+ "destination": "ab88a7f7134e9d5435c97fa2734a17c9"
+}

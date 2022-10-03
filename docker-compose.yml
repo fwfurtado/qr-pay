@@ -1,0 +1,101 @@
+version: '3.7'
+
+services:
+#  database:
+#    image: postgres
+#    environment:
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_USER: postgres
+#      POSTGRES_DB: pay2bank
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - storage:/var/lib/postgresql/data
+
+  consul-server1:
+    image: hashicorp/consul:1.11.2
+    container_name: consul-server1
+    restart: always
+    volumes:
+      - ./deployments/consul/server1.json:/consul/config/server.json:ro
+    networks:
+      - consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+    command: "agent -bootstrap-expect=3"
+
+  consul-server2:
+    image: hashicorp/consul:1.11.2
+    container_name: consul-server2
+    restart: always
+    volumes:
+      - ./deployments/consul/server2.json:/consul/config/server.json:ro
+    networks:
+      - consul
+    command: "agent -bootstrap-expect=3"
+
+  consul-server3:
+    image: hashicorp/consul:1.11.2
+    container_name: consul-server3
+    restart: always
+    volumes:
+      - ./deployments/consul/server3.json:/consul/config/server.json:ro
+    networks:
+      - consul
+    command: "agent -bootstrap-expect=3"
+
+  rabbit1:
+    image: rabbitmq:3-management
+    hostname: rabbit1
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 'secretcookie'
+    volumes:
+      - rabbit-storage-1:/var/lib/rabbitmq/mnesia
+      - ./deployments/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+  rabbit2:
+    image: rabbitmq:3-management
+    hostname: rabbit2
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 'secretcookie'
+    volumes:
+      - rabbit-storage-2:/var/lib/rabbitmq/mnesia
+      - ./deployments/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+  rabbit3:
+    image: rabbitmq:3-management
+    hostname: rabbit3
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 'secretcookie'
+    volumes:
+      - rabbit-storage-3:/var/lib/rabbitmq/mnesia
+      - ./deployments/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    ports:
+      - "5674:5672"
+      - "15674:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+volumes:
+  storage:
+  rabbit-storage-1:
+  rabbit-storage-2:
+  rabbit-storage-3:
